@@ -108,7 +108,35 @@ def create_graph_set_of_users_set_of_items(user_item_ranking_file):
 def create_item_item_graph(graph_users_items):
 	g = nx.Graph()
 	# Your code here ;)
-	
+	# Separate into the bivariate graph, users and items
+	bg = graph_users_items["graph"]
+	users = graph_users_items["users"]
+	items = graph_users_items["items"]
+
+	# Create a dict where the key is a user and
+	# the value is a list of the watched movies by the user
+	saw = {user: [] for user in users}
+	for edge in bg.edges():
+		saw[edge[0]].append(edge[1])
+
+	# Create the tuples that represent the edges of the nodes and a weight 0:
+	t = []
+	for user in saw:
+		for node1 in saw[user]:
+			for node2 in saw[user]:
+				if node1 < node2:
+					t.append((node1,node2))
+
+	import collections
+	# Get the weight
+	counter = collections.Counter(t)
+	# Create tuples like (node1, node2, weight)
+	tw = []
+	for edge in counter.keys():
+		tw.append((edge[0], edge[1], counter[edge]))
+
+	# Create the graph
+	g.add_weighted_edges_from(tw)
 	return g
 
 

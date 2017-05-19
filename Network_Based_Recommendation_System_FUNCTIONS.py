@@ -27,17 +27,17 @@ def pagerank(M, N, nodelist, alpha=0.85, personalization=None, max_iter=100, tol
 		missing = set(nodelist) - set(personalization)
 		if missing:
 			#raise NetworkXError('Personalization vector dictionary must have a value for every node. Missing nodes %s' % missing)
-			print("")
-			print('Error: personalization vector dictionary must have a value for every node')
-			print("")
+			print
+			print 'Error: personalization vector dictionary must have a value for every node'
+			print
 			exit(-1)
 		p = scipy.array([personalization[n] for n in nodelist], dtype=float)
 		#p = p / p.sum()
 		sum_of_all_components = p.sum()
 		if sum_of_all_components > 1.001 or sum_of_all_components < 0.999:
-			print("")
-			print("Error: the personalization vector does not represent a probability distribution :(")
-			print("")
+			print
+			print "Error: the personalization vector does not represent a probability distribution :("
+			print
 			exit(-1)
 	
 	# Dangling nodes
@@ -47,9 +47,9 @@ def pagerank(M, N, nodelist, alpha=0.85, personalization=None, max_iter=100, tol
 		missing = set(nodelist) - set(dangling)
 		if missing:
 			#raise NetworkXError('Dangling node dictionary must have a value for every node. Missing nodes %s' % missing)
-			print("")
-			print('Error: dangling node dictionary must have a value for every node.')
-			print("")
+			print
+			print 'Error: dangling node dictionary must have a value for every node.'
+			print
 			exit(-1)
 		# Convert the dangling dictionary into an array in nodelist order
 		dangling_weights = scipy.array([dangling[n] for n in nodelist], dtype=float)
@@ -65,9 +65,9 @@ def pagerank(M, N, nodelist, alpha=0.85, personalization=None, max_iter=100, tol
 		if err < N * tol:
 			return dict(zip(nodelist, map(float, x)))
 	#raise NetworkXError('power iteration failed to converge in %d iterations.' % max_iter)
-	print("")
-	print('Error: power iteration failed to converge in '+str(max_iter)+' iterations.')
-	print("")
+	print
+	print 'Error: power iteration failed to converge in '+str(max_iter)+' iterations.'
+	print
 	exit(-1)
 
 

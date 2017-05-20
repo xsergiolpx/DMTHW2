@@ -145,6 +145,20 @@ def create_item_item_graph(graph_users_items):
 def create_preference_vector_for_teleporting(user_id, graph_users_items):
 	preference_vector = {}
 	# Your code here ;)
+
+	# Get the total weight of the user aka denominator of the formula
+	total_weight = 0
+	for edge in graph_users_items["graph"].edges(user_id, data=True):
+		total_weight += edge[2]["weight"]
+
+	# Create the preference vector with the non zero edges
+	for edge in graph_users_items["graph"].edges(user_id, data=True):
+		preference_vector[edge[1]] = float(edge[2]["weight"])/float(total_weight)
+
+	# Fill with 0 the items that are not conected to the user
+	for item in graph_users_items["items"]:
+		if item not in preference_vector:
+			preference_vector[item] = float(0.)
 	
 	
 	return preference_vector

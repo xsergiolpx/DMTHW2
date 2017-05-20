@@ -159,8 +159,6 @@ def create_preference_vector_for_teleporting(user_id, graph_users_items):
 	for item in graph_users_items["items"]:
 		if item not in preference_vector:
 			preference_vector[item] = float(0.)
-	
-	
 	return preference_vector
 	
 
@@ -170,9 +168,21 @@ def create_ranked_list_of_recommended_items(page_rank_vector_of_items, user_id, 
 	# This is a list of 'item_id' sorted in descending order of score.
 	sorted_list_of_recommended_items = []
 	# You can obtain this list from a list of [item, score] couples sorted in descending order of score.
-	
 	# Your code here ;)
-	
+
+	# Items rated by the user
+	items = []
+	for edge in training_graph_users_items["graph"].edges():
+		if edge[0] == user_id:
+			items.append(edge[1])
+
+	# Put the items that are not rated by the user in the list without sorting
+	for item in page_rank_vector_of_items:
+		if item not in items:
+			sorted_list_of_recommended_items.append([item, page_rank_vector_of_items[item]])
+
+	# Order it by score descending
+	sorted_list_of_recommended_items = sorted(sorted_list_of_recommended_items, key=lambda k: k[1], reverse=True)
 	
 	return sorted_list_of_recommended_items
 

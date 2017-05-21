@@ -192,8 +192,29 @@ def create_ranked_list_of_recommended_items(page_rank_vector_of_items, user_id, 
 def discounted_cumulative_gain(user_id, sorted_list_of_recommended_items, test_graph_users_items):
 	dcg = 0.
 	# Your code here ;)
-	
-	
+	test_set=[]
+	tg=test_graph_users_items["graph"].edges(data="weight")
+	for i in tg:
+		if i[0] == user_id:
+			test_set.append(i[1:3])
+
+	items = []
+	for a in sorted_list_of_recommended_items:
+		items.append(a[0])
+
+	evaluation_list = []
+	for i in items:
+		for a in test_set:
+			if i == a[0]:
+				# print(i,a[0])
+				evaluation_list.append(a)
+
+	c = 1
+	dcg = 0
+	for i in evaluation_list:
+		b = i[1] / math.log((c + 1), 2)
+		dcg = dcg + b
+		c = c + 1
 	return dcg
 	
 
@@ -202,8 +223,18 @@ def discounted_cumulative_gain(user_id, sorted_list_of_recommended_items, test_g
 def maximum_discounted_cumulative_gain(user_id, test_graph_users_items):
 	dcg = 0.
 	# Your code here ;)
-	
-	
+	test_set = []
+	tg = test_graph_users_items["graph"].edges(data="weight")
+	for i in tg:
+		if i[0] == user_id:
+			test_set.append(i[1:3])
+
+	c = 1
+	dcg = 0
+	for i in test_set:
+		b = 5 / math.log((c + 1), 2)
+		dcg = dcg + b
+		c = c + 1
 	return dcg
 
 

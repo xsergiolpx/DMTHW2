@@ -1,7 +1,7 @@
 import Network_Based_Recommendation_System_FUNCTIONS as homework_2
 import csv
 import networkx as nx
-import json
+import sys
 
 
 # it creates a dictionary with the keys 'graph' (graph - a nx.Graph object), 'categories' (set of all the categories),
@@ -78,9 +78,15 @@ def create_preference_vector_for_teleporting_category_based(user_id, graph_users
     return preference_vector
 
 
+def output(recommended_items_for_recommended_category):
+    for recommended in recommended_items_for_recommended_category:
+        print recommended[0], recommended[1]
+
 def main():
-    # Dictionary to store the result. Key: user_id, Value: list of recommended items (ordered)
-    result_dict = {}
+    try:
+        user_id = int(sys.argv[1])
+    except:
+        user_id = 1683  # the first user_id in u1_base_homework_format.txt
 
     # NORMAL FLOW FOR FINDING THE PAGERANK IN A ITEM_USER BASE
     training_set_file = './input_data/u1_base_homework_format.txt'
@@ -98,55 +104,45 @@ def main():
     categories_nodelist = graph_category_category["graph"].nodes()
     N2 = len(categories_nodelist)
 
-    # iterate through each user of the test set
-    for current_user_id in test_graph_users_items['users']:
-        # calculate the preferences-vector in a user-movies universe
-        preferences_user_items = homework_2.create_preference_vector_for_teleporting(current_user_id,
-                                                                                training_graph_users_items)
+    # calculate the preferences-vector in a user-movies universe
+    preferences_user_items = homework_2.create_preference_vector_for_teleporting(user_id,
+                                                                            training_graph_users_items)
 
-        M1 = nx.to_scipy_sparse_matrix(item_item_graph, nodelist=items_nodelist, weight='weight', dtype=float)
+    M1 = nx.to_scipy_sparse_matrix(item_item_graph, nodelist=items_nodelist, weight='weight', dtype=float)
 
-        personalized_pagerank_vector_of_items = homework_2.pagerank(M1, N1, items_nodelist, alpha=0.85,
-                                                                    personalization=preferences_user_items)
+    personalized_pagerank_vector_of_items = homework_2.pagerank(M1, N1, items_nodelist, alpha=0.85,
+                                                                personalization=preferences_user_items)
 
-        # Recommended items in a user-movies universe
-        sorted_list_of_recommended_items_form_PERSONAL_recommendation = homework_2.create_ranked_list_of_recommended_items(
-            personalized_pagerank_vector_of_items, current_user_id, training_graph_users_items)
+    # Recommended items in a user-movies universe
+    sorted_list_of_recommended_items_form_PERSONAL_recommendation = homework_2.create_ranked_list_of_recommended_items(
+        personalized_pagerank_vector_of_items, user_id, training_graph_users_items)
 
-        # RECOMMENDED CATEGORIES
-        M2 = nx.to_scipy_sparse_matrix(graph_category_category["graph"], nodelist=categories_nodelist, weight='weight',
-                                       dtype=float)
+    # RECOMMENDED CATEGORIES
+    M2 = nx.to_scipy_sparse_matrix(graph_category_category["graph"], nodelist=categories_nodelist, weight='weight',
+                                   dtype=float)
 
-        # calculate the preferences-vector in a user-CATEGORY universe
-        preferences_user_category = create_preference_vector_for_teleporting_category_based(current_user_id,
-                                                                                            training_graph_users_items,
-                                                                                            graph_category_category,
-                                                                                            graph_category_category['categories_movies_dict'])
+    # calculate the preferences-vector in a user-CATEGORY universe
+    preferences_user_category = create_preference_vector_for_teleporting_category_based(user_id,
+                                                                                        training_graph_users_items,
+                                                                                        graph_category_category,
+                                                                                        graph_category_category['categories_movies_dict'])
 
-        # personalized pagerank biased by the most evaluated category by the user
-        personalized_pagerank_vector_of_items = homework_2.pagerank(M2, N2, categories_nodelist,
-                                                                    personalization=preferences_user_category)
+    # personalized pagerank biased by the most evaluated category by the user
+    personalized_pagerank_vector_of_items = homework_2.pagerank(M2, N2, categories_nodelist,
+                                                                personalization=preferences_user_category)
 
-        recommended_category = sorted(personalized_pagerank_vector_of_items,
-                                      key=personalized_pagerank_vector_of_items.get, reverse=True)[0]
+    recommended_category = sorted(personalized_pagerank_vector_of_items,
+                                  key=personalized_pagerank_vector_of_items.get, reverse=True)[0]
 
-        # just add to the 'recommended' list if the movie is in the recommended category
-        # in other words, from the recommendation of the normal user-item pagerank, filter the items that don't
-        # belong to the recommended category
-        recommended_items_for_recommended_category = []
-        for item in sorted_list_of_recommended_items_form_PERSONAL_recommendation:
-            if item[0] in graph_category_category['categories_movies_dict'][recommended_category]:
-                recommended_items_for_recommended_category.append(item)
+    # just add to the 'recommended' list if the movie is in the recommended category
+    # in other words, from the recommendation of the normal user-item pagerank, filter the items that don't
+    # belong to the recommended category
+    recommended_items_for_recommended_category = []
+    for item in sorted_list_of_recommended_items_form_PERSONAL_recommendation:
+        if item[0] in graph_category_category['categories_movies_dict'][recommended_category]:
+            recommended_items_for_recommended_category.append(item)
 
-        result_dict[current_user_id] = recommended_items_for_recommended_category
-
-        try:
-            with open('result_dict.json', 'w') as result_dict_file:
-                json.dump(result_dict, fp=result_dict_file, indent=4)
-        finally:
-            result_dict_file.close()
-    print "oi"
+    output(recommended_items_for_recommended_category)
 
 if __name__ == "__main__":
-
     main()

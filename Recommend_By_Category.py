@@ -85,15 +85,16 @@ def output(recommended_items_for_recommended_category):
 def main():
     try:
         user_id = int(sys.argv[1])
+        training_set_file = sys.argv[2]
+        category_movies_filename = sys.argv[3]
     except:
         user_id = 1683  # the first user_id in u1_base_homework_format.txt
+        training_set_file = './input_data/u1_base_homework_format.txt'
+        category_movies_filename = './datasets/category_movies.txt'
 
     # NORMAL FLOW FOR FINDING THE PAGERANK IN A ITEM_USER BASE
-    training_set_file = './input_data/u1_base_homework_format.txt'
-    test_set_file = './input_data/u1_test_homework_format.txt'
-    category_movies_filename = './datasets/category_movies.txt'
 
-    test_graph_users_items = homework_2.create_graph_set_of_users_set_of_items(test_set_file)
+
     training_graph_users_items = homework_2.create_graph_set_of_users_set_of_items(training_set_file)
     item_item_graph = homework_2.create_item_item_graph(training_graph_users_items)
     graph_category_category = create_category_category_graph(category_movies_filename)

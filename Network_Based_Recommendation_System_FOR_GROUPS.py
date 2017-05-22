@@ -3,6 +3,9 @@ import time
 import pprint as pp
 import networkx as nx
 
+from collections import OrderedDict
+from itertools import izip, repeat
+
 import Network_Based_Recommendation_System_FUNCTIONS as homework_2
 
 
@@ -68,14 +71,26 @@ for current_group in all_groups:
 	print "Current group: "
 	pp.pprint(current_group)
 	print "Current time: " + str(time.asctime(time.localtime()))
-	
+
 	sorted_list_of_recommended_items_for_current_group = []
+	lista=[]
 	# Your code here ;)
 	#
-	
-	
-	
-	
+	for single in current_group:
+		preference_vector = homework_2.create_preference_vector_for_teleporting(single, graph_users_items)
+		personalized_pagerank_vector_of_items = homework_2.pagerank(M, N, nodelist, alpha=0.85,
+																	personalization=preference_vector)
+		sorted_list_of_recommended_items_for_current_single_in_group = homework_2.create_ranked_list_of_recommended_items(personalized_pagerank_vector_of_items, single, graph_users_items)
+		weight = current_group[single]
+		for i in sorted_list_of_recommended_items_for_current_single_in_group:
+			i[1] = i[1] * weight
+		lista.extend(sorted_list_of_recommended_items_for_current_single_in_group)
+
+	#print(sorted_list_of_recommended_items_for_current_group)
+	lista=sorted(lista,key=lambda k: k[1], reverse=True)
+	sorted_list_of_recommended_items_for_current_group.extend([x[0] for x in lista if x not in sorted_list_of_recommended_items_for_current_group])
+
+	sorted_list_of_recommended_items_for_current_group = list(OrderedDict(izip(sorted_list_of_recommended_items_for_current_group, repeat(None))))
 	print "Recommended Sorted List of Items:"
 	print(str(sorted_list_of_recommended_items_for_current_group[:30]))
 	print

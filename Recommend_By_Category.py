@@ -100,27 +100,21 @@ def main():
     training_graph_users_items = homework_2.create_graph_set_of_users_set_of_items(training_set_file)
     item_item_graph = homework_2.create_item_item_graph(training_graph_users_items)
     graph_category_category = create_category_category_graph(category_movies_filename)
-
-    items_nodelist = item_item_graph.nodes()
-    N1 = len(items_nodelist)
-
-    categories_nodelist = graph_category_category["graph"].nodes()
-    N2 = len(categories_nodelist)
-
     # calculate the preferences-vector in a user-movies universe
     preferences_user_items = homework_2.create_preference_vector_for_teleporting(user_id,
                                                                             training_graph_users_items)
-
+    items_nodelist = item_item_graph.nodes()
+    N1 = len(items_nodelist)
     M1 = nx.to_scipy_sparse_matrix(item_item_graph, nodelist=items_nodelist, weight='weight', dtype=float)
-
     personalized_pagerank_vector_of_items = homework_2.pagerank(M1, N1, items_nodelist, alpha=0.85,
                                                                 personalization=preferences_user_items)
-
     # Recommended items in a user-movies universe
     sorted_list_of_recommended_items_form_PERSONAL_recommendation = homework_2.create_ranked_list_of_recommended_items(
         personalized_pagerank_vector_of_items, user_id, training_graph_users_items)
 
     # RECOMMENDED CATEGORIES
+    categories_nodelist = graph_category_category["graph"].nodes()
+    N2 = len(categories_nodelist)
     M2 = nx.to_scipy_sparse_matrix(graph_category_category["graph"], nodelist=categories_nodelist, weight='weight',
                                    dtype=float)
 
@@ -135,6 +129,7 @@ def main():
     personalized_pagerank_vector_of_items = homework_2.pagerank(M2, N2, categories_nodelist,
                                                                 personalization=preferences_user_category)
 
+    # get the top 1 category
     recommended_category = sorted(personalized_pagerank_vector_of_items,
                                   key=personalized_pagerank_vector_of_items.get, reverse=True)[0]
 

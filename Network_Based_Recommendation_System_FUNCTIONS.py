@@ -183,7 +183,6 @@ def create_ranked_list_of_recommended_items(page_rank_vector_of_items, user_id, 
 
 	# Order it by score descending
 	sorted_list_of_recommended_items = sorted(sorted_list_of_recommended_items, key=lambda k: k[1], reverse=True)
-	
 	return sorted_list_of_recommended_items
 
 
@@ -228,24 +227,11 @@ def maximum_discounted_cumulative_gain(user_id, test_graph_users_items):
 	for i in tg:
 		if i[0] == user_id:
 			test_set.append(i[1:3])
-
+	sorted_test_set=sorted(test_set, key=lambda k: k[1], reverse=True)
 	c = 1
 	dcg = 0
-	for i in test_set:
-		b = 5 / math.log((c + 1), 2)
+	for i in sorted_test_set:
+		b = i[1] / math.log((c + 1), 2)
 		dcg = dcg + b
 		c = c + 1
 	return dcg
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,6 +2,7 @@ import Network_Based_Recommendation_System_FUNCTIONS as homework_2
 import csv
 import networkx as nx
 import sys
+import ast
 
 
 # it creates a dictionary with the keys 'graph' (graph - a nx.Graph object), 'categories' (set of all the categories),
@@ -82,19 +83,20 @@ def output(recommended_items_for_recommended_category):
     for recommended in recommended_items_for_recommended_category:
         print recommended[0], recommended[1]
 
+
 def main():
     try:
         user_id = int(sys.argv[1])
         training_set_file = sys.argv[2]
         category_movies_filename = sys.argv[3]
+        preferences_user_category = ast.literal_eval(sys.argv[4])
     except:
         user_id = 1683  # the first user_id in u1_base_homework_format.txt
         training_set_file = './input_data/u1_base_homework_format.txt'
         category_movies_filename = './datasets/category_movies.txt'
+        preferences_user_category = None
 
     # NORMAL FLOW FOR FINDING THE PAGERANK IN A ITEM_USER BASE
-
-
     training_graph_users_items = homework_2.create_graph_set_of_users_set_of_items(training_set_file)
     item_item_graph = homework_2.create_item_item_graph(training_graph_users_items)
     graph_category_category = create_category_category_graph(category_movies_filename)
@@ -123,10 +125,11 @@ def main():
                                    dtype=float)
 
     # calculate the preferences-vector in a user-CATEGORY universe
-    preferences_user_category = create_preference_vector_for_teleporting_category_based(user_id,
-                                                                                        training_graph_users_items,
-                                                                                        graph_category_category,
-                                                                                        graph_category_category['categories_movies_dict'])
+    if preferences_user_category is None:
+        preferences_user_category = create_preference_vector_for_teleporting_category_based(user_id,
+                                                                                            training_graph_users_items,
+                                                                                            graph_category_category,
+                                                                                            graph_category_category['categories_movies_dict'])
 
     # personalized pagerank biased by the most evaluated category by the user
     personalized_pagerank_vector_of_items = homework_2.pagerank(M2, N2, categories_nodelist,

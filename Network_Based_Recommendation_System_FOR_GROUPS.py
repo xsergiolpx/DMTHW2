@@ -86,11 +86,11 @@ for current_group in all_groups:
 			i[1] = i[1] * weight
 		lista.extend(sorted_list_of_recommended_items_for_current_single_in_group)
 
-	#print(sorted_list_of_recommended_items_for_current_group)
 	lista=sorted(lista,key=lambda k: k[1], reverse=True)
 	sorted_list_of_recommended_items_for_current_group.extend([x[0] for x in lista if x not in sorted_list_of_recommended_items_for_current_group])
 
 	sorted_list_of_recommended_items_for_current_group = list(OrderedDict(izip(sorted_list_of_recommended_items_for_current_group, repeat(None))))
+
 	print "Recommended Sorted List of Items:"
 	print(str(sorted_list_of_recommended_items_for_current_group[:30]))
 	print
